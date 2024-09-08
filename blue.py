@@ -10,7 +10,7 @@ nltk.download('punkt_tab')
 # Fungsi untuk melakukan inferensi menggunakan model yang sudah di-load di Ollama
 def get_predictions(input_text):
     # Jalankan perintah ollama untuk melakukan inferensi dengan model GGUF
-    command = f"ollama run llama_kesehatan --prompt '{input_text}'"
+    command = f"ollama run llama_kesehatan '{input_text}'"
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
     
     # Ambil output dari hasil inferensi
