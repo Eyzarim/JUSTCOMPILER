@@ -5,7 +5,7 @@ import subprocess
 import json
 
 # Memastikan NLTK siap untuk digunakan (download tokenizer)
-nltk.download('punkt')
+nltk.download('punkt_tab')
 
 # Fungsi untuk melakukan inferensi menggunakan model yang sudah di-load di Ollama
 def get_predictions(input_text):
