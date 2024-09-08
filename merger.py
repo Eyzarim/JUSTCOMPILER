@@ -5,4 +5,4 @@ from transformers import AutoModelForCausalLM
 model = AutoModelForCausalLM.from_pretrained("/app/trainer/tuned_model", use_safetensors=True)
 
 # Simpan model secara langsung menggunakan PyTorch tanpa sharding
-torch.save(model.state_dict(), "/app/hasil-akhir/pytorch_model_singlefile.bin")
+torch.save(model.state_dict(), "/app/pytorch_model_singlefile.bin")
