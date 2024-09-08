@@ -18,7 +18,7 @@ if not os.path.exists("log_latihan"):
 # Fungsi untuk melakukan inferensi menggunakan model yang sudah di-load di Ollama
 def get_predictions(input_text):
     # Jalankan perintah ollama untuk melakukan inferensi dengan model GGUF
-    command = f"ollama run llama_kesehatan '{input_text}'"
+    command = f"ollama run llama_kesehatan2 '{input_text}'"
     try:
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300)
         output = result.stdout.decode('utf-8').strip()
@@ -90,7 +90,7 @@ for input_text, reference in zip(input_texts, references):
     print('-' * 50)
 
     # Simpan hasil ke file JSON secara bertahap setelah setiap inferensi
-    with open("log_latihan/predictions_and_scores.json", "w") as f:
+    with open("log_latihan2/predictions_and_scores.json", "w") as f:
         json.dump({
             "predictions": predictions,
             "bleu_scores": bleu_scores,
