@@ -19,11 +19,15 @@ if not os.path.exists("log_latihan"):
 def get_predictions(input_text):
     # Jalankan perintah ollama untuk melakukan inferensi dengan model GGUF
     command = f"ollama run llama_kesehatan '{input_text}'"
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
-    
-    # Ambil output dari hasil inferensi
-    output = result.stdout.decode('utf-8')
-    return output.strip()
+    try:
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300)
+        output = result.stdout.decode('utf-8').strip()
+        if result.returncode != 0:
+            print(f"Error: {result.stderr.decode('utf-8')}")
+        return output
+    except subprocess.TimeoutExpired:
+        print("Timeout: Model tidak bisa menyelesaikan inferensi dalam waktu yang ditentukan.")
+        return "Error: Timeout during inference"
 
 # Fungsi untuk menghitung BLEU Score dengan smoothing
 def calculate_bleu_score(reference, prediction):
@@ -85,16 +89,13 @@ for input_text, reference in zip(input_texts, references):
     print(f"ROUGE Scores: {rouge}")
     print('-' * 50)
 
-# Menyimpan hasil ke file JSON dalam folder log_latihan
-with open("log_latihan/predictions_and_bleu_scores.json", "w") as f_bleu:
-    json.dump({"predictions": predictions, "bleu_scores": bleu_scores}, f_bleu)
-
-with open("log_latihan/predictions_and_meteor_scores.json", "w") as f_meteor:
-    json.dump({"predictions": predictions, "meteor_scores": meteor_scores}, f_meteor)
-
-# ROUGE scores perlu diubah ke format yang bisa dibaca oleh JSON
-rouge_scores_serializable = [{key: value.fmeasure for key, value in rouge.items()} for rouge in rouge_scores]
-with open("log_latihan/predictions_and_rouge_scores.json", "w") as f_rouge:
-    json.dump({"predictions": predictions, "rouge_scores": rouge_scores_serializable}, f_rouge)
+    # Simpan hasil ke file JSON secara bertahap setelah setiap inferensi
+    with open("log_latihan/predictions_and_scores.json", "w") as f:
+        json.dump({
+            "predictions": predictions,
+            "bleu_scores": bleu_scores,
+            "meteor_scores": meteor_scores,
+            "rouge_scores": [{key: value.fmeasure for key, value in rouge.items()} for rouge in rouge_scores]
+        }, f)
 
 print("Hasil prediksi dan score sudah disimpan dalam folder 'log_latihan'.")
