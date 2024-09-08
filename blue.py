@@ -9,6 +9,7 @@ import os
 
 # Memastikan NLTK siap untuk digunakan
 nltk.download('punkt')
+nltk.download('wordnet')
 
 # Membuat folder log_latihan jika belum ada
 if not os.path.exists("log_latihan"):
