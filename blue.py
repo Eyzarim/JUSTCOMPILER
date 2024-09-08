@@ -1,5 +1,5 @@
 import nltk
-from nltk.translate.bleu_score import sentence_bleu
+from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from nltk.translate.meteor_score import meteor_score
 from rouge_score import rouge_scorer
 from datasets import load_dataset
@@ -24,15 +24,18 @@ def get_predictions(input_text):
     output = result.stdout.decode('utf-8')
     return output.strip()
 
-# Fungsi untuk menghitung BLEU Score
+# Fungsi untuk menghitung BLEU Score dengan smoothing
 def calculate_bleu_score(reference, prediction):
     reference_tokenized = nltk.word_tokenize(reference)
     prediction_tokenized = nltk.word_tokenize(prediction)
-    return sentence_bleu([reference_tokenized], prediction_tokenized)
+    smoothie = SmoothingFunction().method4  # Menggunakan smoothing agar skor BLEU tidak terlalu rendah
+    return sentence_bleu([reference_tokenized], prediction_tokenized, smoothing_function=smoothie)
 
 # Fungsi untuk menghitung METEOR Score
 def calculate_meteor_score(reference, prediction):
-    return meteor_score([reference], prediction)
+    reference_tokenized = nltk.word_tokenize(reference)
+    prediction_tokenized = nltk.word_tokenize(prediction)
+    return meteor_score([reference_tokenized], prediction_tokenized)
 
 # Fungsi untuk menghitung ROUGE Score
 def calculate_rouge_scores(reference, prediction):
@@ -88,7 +91,9 @@ with open("log_latihan/predictions_and_bleu_scores.json", "w") as f_bleu:
 with open("log_latihan/predictions_and_meteor_scores.json", "w") as f_meteor:
     json.dump({"predictions": predictions, "meteor_scores": meteor_scores}, f_meteor)
 
+# ROUGE scores perlu diubah ke format yang bisa dibaca oleh JSON
+rouge_scores_serializable = [{key: value.fmeasure for key, value in rouge.items()} for rouge in rouge_scores]
 with open("log_latihan/predictions_and_rouge_scores.json", "w") as f_rouge:
-    json.dump({"predictions": predictions, "rouge_scores": [str(rouge) for rouge in rouge_scores]}, f_rouge)
+    json.dump({"predictions": predictions, "rouge_scores": rouge_scores_serializable}, f_rouge)
 
 print("Hasil prediksi dan score sudah disimpan dalam folder 'log_latihan'.")
