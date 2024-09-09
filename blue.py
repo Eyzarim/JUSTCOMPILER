@@ -18,7 +18,7 @@ if not os.path.exists("log_latihan"):
 # Fungsi untuk melakukan inferensi menggunakan model yang sudah di-load di Ollama
 def get_predictions(input_text):
     # Jalankan perintah ollama untuk melakukan inferensi dengan model GGUF
-    command = f"ollama run llama_kesehatan2 '{input_text}'"
+    command = f"ollama run llama-opsi '{input_text}'"
     try:
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300)
         output = result.stdout.decode('utf-8').strip()
